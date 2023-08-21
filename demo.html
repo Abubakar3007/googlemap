@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>City Map Selector</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+    <h1>Select a City to Display the Map</h1>
+    <select id="citySelect">
+      <option value="new-york">New York</option>
+      <option value="los-angeles">Los Angeles</option>
+      <option value="delhi">India</option>
+      <!-- Add more cities here -->
+    </select>
+    <div id="map" style="height: 400px;"></div>
+    
+
+  <script>
+   // script.js
+
+const citySelect = document.getElementById('citySelect');
+const mapContainer = document.getElementById('map');
+let map = null;
+
+// Function to initialize the map
+// Function to initialize the map with animation and style
+function initMap(city) {
+  if (map) {
+    map.remove();
+  }
+
+  map = L.map('map').setView([0, 0], 12); // Default center and zoom
+
+  // Add a tile layer to the map
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  // Use a Geocoding API to get the coordinates of the selected city
+  const coordinates = getCoordinates(city);
+  if (coordinates) {
+    map.flyTo(coordinates, 12, { animate: true, duration: 1.5 }); // Animate the transition
+    const marker = L.marker(coordinates).addTo(map);
+    marker.bindPopup(city).openPopup();
+
+    // Add custom style to the selected marker
+    marker.setIcon(L.icon({
+      iconUrl: 'custom-marker-icon.png', // Provide a custom marker icon URL
+      iconSize: [40, 40], // Adjust the icon size as needed
+      iconAnchor: [20, 40], // Adjust the anchor point based on the icon size
+      popupAnchor: [0, -40] // Adjust the popup anchor for proper display
+    }));
+  }
+}
+
+
+// Attach an event listener to the select element
+citySelect.addEventListener('change', () => {
+  const selectedCity = citySelect.value;
+  initMap(selectedCity);
+});
+
+// Load the initial map
+initMap(citySelect.value);
+
+// Mock function to return coordinates based on city name
+function getCoordinates(city) {
+  // Replace this with a real geocoding service call
+  // or use a predefined dictionary of city coordinates
+  const cityCoordinates = {
+    'new-york': [40.712776, -74.005974],
+    'los-angeles': [34.052235, -118.243683],
+    'delhi': [28.6139, 77.2090],
+  };
+  return cityCoordinates[city];
+}
+
+  </script>
+</body>
+</html>
